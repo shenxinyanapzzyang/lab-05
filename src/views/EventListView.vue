@@ -39,10 +39,12 @@ onMounted(() => {
   watchEffect(() => {
     EventService.getEvents(3, page.value)
         .then((response) => {
-          events.value = response.data
-          totalEvents.value = response.headers['x-total-count']
+          // 使用类型断言确保类型安全
+          const typedResponse = response as { data: Event[]; headers: { [key: string]: string } }
+          events.value = typedResponse.data
+            totalEvents.value = Number(typedResponse.headers['x-total-count'] || '0')
         })
-        .catch((error) => {
+        .catch((error: Error) => {
           console.error('There was an error!', error)
         })
   })
@@ -50,14 +52,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="header-controls">
-    <h1>Events For Good</h1>
-    <div class="page-size-selector">
-      <label for="pageSize">Page Size:</label>
+  <div class="flex flex-col items-center mb-5">
+    <h1 class="text-3xl">Events For Good</h1>
+    <div class="mt-3">
+      <label for="pageSize" class="text-lg">Page Size:</label>
       <select 
         id="pageSize" 
         :value="pageSize" 
         @change="(e) => changePageSize(parseInt((e.target as HTMLSelectElement).value))"
+        class="ml-2 px-3 py-1.5 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 text-lg"
       >
         <option value="1">1 event per page</option>
         <option value="2">2 events per page</option>
@@ -67,15 +70,17 @@ onMounted(() => {
     </div>
   </div>
   <!-- new element -->
-  <div class="events">
+  <!-- Implementing vertical centering layout using Tailwind CSS classes -->
+  <div class="flex flex-col items-center">
     <EventCard v-for="event in events" :key="event.id" :event="event" />
     <EventSummary v-for="event in events" :key="`summary-${event.id}`" :event="event" />
-    <div class="pagination">
+    <div class="flex w-[290px]">
       <RouterLink 
         id="page-prev"
         :to="{ name: 'event-list-view', query: { page: page - 1, pageSize: pageSize } }" 
         rel="prev" 
         v-if="page != 1" 
+        class="flex-1 text-left text-gray-700 hover:text-green-500 no-underline text-lg"
         >&#60; Prev Page</RouterLink 
       >
 
@@ -84,6 +89,7 @@ onMounted(() => {
         :to="{ name: 'event-list-view', query: { page: page + 1, pageSize: pageSize } }" 
         rel="next" 
         v-if="hasNexPage"
+        class="flex-1 text-right text-gray-700 hover:text-green-500 no-underline text-lg"
         >Next Page &#62;</RouterLink 
       >
     </div>
@@ -91,44 +97,5 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.header-controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.page-size-selector {
-  margin-top: 10px;
-}
-
-.page-size-selector select {
-  padding: 5px 10px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-  margin-left: 5px;
-}
-
-.events {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.pagination {
-  display: flex;
-  width: 290px;
-}
-.pagination a {
-  flex: 1;
-  text-decoration: none;
-  color: #2c3e50;
-}
-
-#page-prev {
-  text-align: left;
-}
-
-#page-next {
-  text-align: right;
-}
+/* 所有样式现在都通过Tailwind CSS类实现 */
 </style>

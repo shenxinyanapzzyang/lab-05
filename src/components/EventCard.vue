@@ -18,29 +18,14 @@ defineProps<{
 </script>
 
 <template>
-  <RouterLink class="event-link" :to="{ name: 'event-detail-view', params: { id: event.id } }">
-    <div class="event-card">
-      <h2>{{ event.title }}</h2>
-      <span>@{{ event.time }} on {{ event.date }}</span>
+  <RouterLink class="text-gray-700 no-underline" :to="{ name: 'event-detail-view', params: { id: event.id } }">
+    <div class="cursor-pointer border border-gray-600 p-[20px] w-[250px] mb-[18px] hover:scale-101 hover:shadow-lg">
+      <h2 class="text-xl font-bold mb-2">{{ event.title }}</h2>
+      <span class="text-lg">@{{ event.time }} on {{ event.date }}</span>
     </div>
   </RouterLink>
 </template>
 
 <style scoped>
-.event-card {
-  padding: 20px;
-  width: 250px;
-  cursor: pointer;
-  border: 1px solid #39495c;
-  margin-bottom: 18px;
-}
-.event-card:hover {
-  transform: scale(1.01);
-  box-shadow: 0 3px 12px 0 rgba(0, 0, 0, 0.2);
-}
-
-.event-link {
-  text-decoration: none;
-  color: #2c3e50;
-}
+/* 所有样式现在都通过Tailwind CSS类实现 */
 </style>
